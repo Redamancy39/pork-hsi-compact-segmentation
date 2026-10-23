@@ -1,0 +1,2 @@
+# Install the appropriate official PyTorch wheel for your platform first.
+torch==2.7.0

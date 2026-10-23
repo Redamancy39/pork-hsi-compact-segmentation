@@ -1,0 +1,11 @@
+# Attribution and distribution scope
+
+Copyright (c) 2026 the study authors. No additional software reuse licence has been assigned. Publication of the repository was authorised by the project owner; no blanket MIT or Apache relicensing is applied.
+
+- **Pork dataset:** Ghimpeteanu et al., version 1.0.0, DOI 10.5281/zenodo.17242553; associated article DOI 10.3390/s25227015. Provider's dataset licence: CC BY 4.0. Raw HSI and complete source masks are not redistributed. Manifests, fitted preprocessing and aggregate results are not distributed in this code-only repository.
+- **Pixel Transformer:** study-authored binary adaptation of the architecture described by Ghimpeteanu et al. The existing source record examined official repository `hayatrajani/hsi-pork-vit` commit `26322ecbcbc26ac621e560352cb3afbdc51a86ca`, containing README/LICENSE/ignore rather than runnable model weights/code. This release does not claim the original multiclass industrial pipeline or import its licence onto study-authored code.
+- **U-Net, residual learning, GroupNorm, PCA and depthwise factorisation:** the implementation follows the mathematical/architectural designs credited in the manuscript. Core references include DOI 10.1007/978-3-319-24574-4_28, 10.1109/CVPR.2016.90, 10.1007/978-3-030-01261-8_1, 10.1007/b98835 and 10.48550/arXiv.1704.04861. Paper citations do not themselves grant software licences.
+- **Oat results:** the manuscript uses HSI-AgriFoodAnomaly, dataset DOI 10.57745/QTLG7X; associated article DOI 10.1038/s41597-026-07835-7. No oat payload or numerical result table is included.
+- **Dependencies:** NumPy, PyTorch, scikit-learn, Pillow and Matplotlib are installed separately. Their original licences/notices continue to apply; their source and binaries are not vendored here.
+
+Forward computations were extracted from the local research implementations. The release replaces historical file-based shared initialisation with deterministic in-memory initialisation. Local CPU tensor comparisons checked this change against the archived initial states; those states and the comparison records remain local. Optional archived PCA centring biases may be supplied externally to preserve last-bit rounding. This repository includes neither fitted preprocessing nor weights.
