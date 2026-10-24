@@ -1,0 +1,15 @@
+{
+  "execution_block": "A",
+  "seed": 42,
+  "batches": [1, 8, 64],
+  "data_roots": ["/path/to/data"],
+  "manifest": "/path/to/assets/manifests/timing128.csv",
+  "manifest_sha256": "REPLACE_WITH_ACTUAL_SHA256",
+  "preprocessing": "/path/to/assets/artifacts/preprocessing.npz",
+  "preprocessing_sha256": "REPLACE_WITH_ACTUAL_SHA256",
+  "checkpoints": {
+    "PCA16_T_SAME_WIDTH": {"path": "/path/to/pca16_transformer_seed42_dice_best.pt", "sha256": "REPLACE_WITH_ACTUAL_SHA256"},
+    "PCA16_DS_RESIDUAL": {"path": "/path/to/ds_residual_seed42_dice_best.pt", "sha256": "REPLACE_WITH_ACTUAL_SHA256"},
+    "B1_ALL_D1": {"path": "/path/to/all_d1_seed42_dice_best.pt", "sha256": "REPLACE_WITH_ACTUAL_SHA256"}
+  }
+}

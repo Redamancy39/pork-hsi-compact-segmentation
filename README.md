@@ -1,40 +1,54 @@
 # Compact hyperspectral segmentation of foreign materials on pork
 
-**Code-only release** accompanying *Hyperspectral localisation of foreign materials on pork surfaces using a compact residual segmentation model*.
+Source code accompanying *Hyperspectral localisation of foreign materials on pork surfaces using a compact residual segmentation model*.
 
-The workflow uses all 184 measured hyperspectral bands. A FIT-derived standardiser and frozen PCA16 projection feed a compact 40-channel residual network that preserves the 20×16 patch grid. PCA16 is a mathematical projection, not a 16-band camera specification.
+The workflow uses all 184 measured bands. A FIT-derived standardiser and frozen PCA16 projection feed a 40-channel residual network on a 20 × 16 patch grid. The comparison includes nine model configurations and tissue-specific error metrics for meat and fat.
 
-## Code
+## Installation and lightweight checks
 
-- `src/models.py`: compact PCA16 U-Net (`B0`), compact residual (`B1`), adapted raw184 pixel Transformer (`T`), raw184 pointwise MLP, PCA16 depthwise-separable residual, raw184 U-Net, all-dilation-one/no-identity residual controls and same-width PCA16 Transformer. It also contains the per-patch class-balanced BCE plus masked Dice loss and source-level pixel metrics.
-- `src/labels.py`: exact class-ID/RGB decoding. IDs 0–9 are foreign-material foreground; MEAT/FAT/CB (10–12) are background. Unknown IDs/colours remain ignored; ID0 is foreground.
-- `src/workflow.py`: portable single-run training, fixed-member evaluation and original-three-model timing entry points. Inputs are supplied explicitly by the user; importing the module starts no job.
-- `tests/test_code.py`: synthetic CPU tests without model forwards or optimiser updates.
-
-This repository contains **no raw data, complete masks, trained/initial checkpoints, numerical result tables, member lists, fitted preprocessing, sampling plans, unpublished manuscript or private research records**. Those remain local or with the original data providers. Public source access does not make the complete experimental asset bundle available.
-
-## Dependencies and checks
-
-Use Python 3.10 or later. Install an official, platform-appropriate PyTorch 2.7.0 build, then:
+Use Python 3.10 or later with an official platform-appropriate PyTorch 2.7.0 build:
 
 ```sh
 python -m pip install -r requirements.txt
 python -m unittest discover -s tests -v
 python src/workflow.py --help
+python src/file_timing.py --config configs/file_timing.example.json
 ```
 
-The dependency pins describe the packaging environment; no clean-environment installation is claimed. Current checks cover synthetic label/ignore behaviour, hand-counted pixel metrics and loss, nine model definitions/parameter counts, and path safety. They do not train, run a model forward, read original data or validate throughput. Local archived-initial-state comparisons were also performed before publication; the compared tensors and records are not distributed.
+The last command prints the timing schedule. Actual processing requires the explicit `--execute` flag and separately supplied inputs. Tests use synthetic CPU data to check labels, metrics, model construction, parameter counts, sampling, file paths and timing schedules; they do not run model forwards. The portable training and timing commands have not been replayed end to end as a release test.
 
-## Data and external assets
+## Models and entry points
 
-The public pork dataset, version 1.0.0, is distributed separately at [Zenodo](https://doi.org/10.5281/zenodo.17242553), with attribution to Ghimpeteanu and colleagues; the associated paper is [doi:10.3390/s25227015](https://doi.org/10.3390/s25227015). Obtain and use data according to the provider's CC BY 4.0 terms. This repository does not download data.
+| Family ID | Configuration |
+|---|---|
+| `B0` | PCA16 compact U-Net |
+| `B1` | PCA16 residual, 40 channels, block dilation 1/1/2/2 |
+| `T` | Adapted raw184 pixel Transformer |
+| `RAW184_MLP` | Standardised raw184 pointwise MLP |
+| `PCA16_DS_RESIDUAL` | Depthwise-separable residual |
+| `RAW184_UNET` | Standardised raw184 compact U-Net |
+| `B1_ALL_D1` | Residual with all block dilations set to one |
+| `B1_NO_SKIP` | Residual without identity additions |
+| `PCA16_T_SAME_WIDTH` | PCA16 Transformer with the same attention width as `T` |
 
-The CLI requires `--data-root` containing `training_dataset_20x16/` and a separate `--assets-root` prepared by the user:
+- `src/models.py`: model definitions, frozen preprocessing, training loss and source-level pixel metrics.
+- `src/labels.py`: class-ID/RGB decoding. IDs 0–9 are foreground, IDs 10–12 are meat/fat/conveyor-belt background, and unknown labels remain ignored. ID0 is foreground.
+- `src/workflow.py`: single-run training, fixed-member evaluation and the preceding three-model timing entry point, retained for compatibility.
+- `src/file_timing.py`: the two-triplet file-to-mask timing protocol corresponding to the manuscript's six-model comparison.
+- `configs/file_timing.example.json`: editable path/hash example, without experiment members or fitted values.
+
+Version 1.1.0 preserves the model, label, training and evaluation implementations from v1.0.0. See [CHANGELOG.md](CHANGELOG.md) for the publication update.
+
+## Public data and experiment inputs
+
+The public pork dataset, version 1.0.0, is available from [Zenodo](https://doi.org/10.5281/zenodo.17242553). Cite Ghimpeteanu and colleagues' [originating study](https://doi.org/10.3390/s25227015) and follow the dataset's CC BY 4.0 terms. Provide the extracted dataset under a local data root; members in manifests are relative paths such as those under `training_dataset_20x16/`.
+
+The training/evaluation commands expect a separately supplied asset directory:
 
 ```text
 assets-root/
   artifacts/preprocessing.npz
-  artifacts/projection_biases.json       # optional historical centring biases
+  artifacts/projection_biases.json       # optional archived FP32 centring biases
   artifacts/plans/schedule_<seed>.npy
   artifacts/plans/flips_<seed>.npy
   manifests/fit_dev.csv
@@ -43,34 +57,50 @@ assets-root/
   manifests/label_mapping.json
 ```
 
-`preprocessing.npz` contains FIT-derived `mean`, `scale` and `pca_mean` vectors of length 184, a 16×184 `components` matrix, and the fitted explained variance. `load_preprocessing(assets_root)` loads these frozen statistics; optional historical FP32 centring biases avoid recalculating a near-zero matrix product with different BLAS rounding. Nothing is refitted by this code.
+`preprocessing.npz` supplies frozen FIT statistics: `mean`, `scale` and `pca_mean` vectors of length 184, a 16 × 184 `components` matrix and `explained_variance`. The optional bias JSON maps `family_seed` to a 16-element archived projection bias. Preprocessing is loaded, not fitted, by these entry points.
 
-Manifests use `parent`, `image_member`, `label_member`, and, for fitting/development/timing, `role`. File members are relative to the data root. Labels may be ID arrays or exact published RGB colours. The JSON mapping uses `original_id_to_rgb`, `derived_foreground` and `derived_background`, as consumed by `labels.py`; users must obtain the real colour mapping from the source annotations, not guess it from appearance. The original study used 7,168 FIT, 1,024 DEV, 2,048 already-observed comparison patches and 128 timing inputs. Sampling and flip arrays have shape 6000×64. These descriptions define interfaces; exact source members and fitted arrays are intentionally not published in this code-only release.
+Manifests use `parent`, `image_member`, `label_member` and the relevant `role`. The label mapping supplies `original_id_to_rgb`, `derived_foreground` and `derived_background`; use the provider's actual mapping. Sampling and flip arrays have shape 6000 × 64. Checkpoint files contain a `model` state dictionary.
 
-## Execution examples
+The research partitions comprise 7168 FIT patches, 1024 DEV patches and 2048 comparative patches. Parent source denotes the original-image filename prefix; it is not a verified batch or session ID. Overlapping patches can repeat source pixels. The comparison sources had already informed later model hypotheses; four seeds describe training randomness on those fixed members.
 
-The following commands are for future execution with separately supplied assets and compatible CUDA/BF16 support:
+This release provides source code and interface examples. Exact recorded-run reproduction additionally requires the selected member lists, sampling plans, frozen preprocessing and checkpoints, which are not distributed in this repository. Supporting numerical tables are part of the manuscript's supplementary files.
+
+## Training and evaluation
 
 ```sh
 python src/workflow.py train --data-root /path/to/data --assets-root /path/to/assets --output /path/to/new-run --family B1 --seed 42 --learning-rate 0.001 --execute
 python src/workflow.py evaluate --data-root /path/to/data --assets-root /path/to/assets --output /path/to/new-evaluation --family B1 --seed 42 --checkpoint /path/to/dice_best.pt --execute
-python src/workflow.py time --data-root /path/to/data --assets-root /path/to/assets --output /path/to/new-timing --checkpoint-dir /path/to/three-checkpoints --execute
 ```
 
-Output directories must be new and outside the source directory. The timing command expects `B0_42.pt`, `B1_42.pt` and `T_42.pt`. Checkpoints and assets are not publicly downloadable from this repository. The reorganised complete train/evaluate/timing workflow has not been replayed end to end.
+Use a new output directory outside the source checkout and compatible CUDA/BF16 support. A training run uses 6000 updates, effective batch 64, FP32 preprocessing/loss and BF16 network execution. DEV is evaluated every 200 updates, selecting source-macro Dice at logit zero with earlier exact ties retained. The finite learning-rate comparison uses DEV seeds 42/43, followed by seeds 44/45 at the selected rate; the two structural controls inherit the residual recipe. Selection and model locking precede comparative evaluation.
 
-Training runs one recipe, with 6,000 updates, effective batch 64, FP32 preprocessing/loss and BF16 network execution. It evaluates DEV every 200 updates and retains the earlier exact tie when selecting the largest DEV source-macro Dice at logit zero. The paper's finite rate selection used DEV seeds 42/43, then repeated the chosen recipe at seeds 44/45; the two structural controls used the residual model's fixed recipe. This CLI does not launch a new search automatically. Freeze models and selection rules before evaluating comparison members.
+## Six-model file-to-mask timing
 
-Parent source means a filename prefix, not a verified meat batch, physical object or acquisition session. Overlapping patches can repeat source pixels. Training seeds are not independent acquisitions, and previously observed comparison sources are not a new confirmation set.
+The manuscript's current timing comprises two separate three-model execution blocks:
 
-## Timing and applicability
+- **A:** `PCA16_T_SAME_WIDTH`, `PCA16_DS_RESIDUAL`, `B1_ALL_D1`.
+- **B:** `B0`, `B1`, `T`.
 
-Analytical MACs, device execution and the warm 128-file NPY-to-CPU-mask interval have distinct scopes. The historical matched timing compares the original PCA16 U-Net, residual and raw184 adapted Transformer only; the added configurations were not re-timed. The recorded Transformer measurements used a mathematical attention fallback; default legal SDPA backend selection is retained in this portable code. Runtime on another backend or machine is not an equivalent remeasurement of the paper's record. Acquisition and physical removal are outside the file interval.
+Both use seed42 Dice-best checkpoints, the same 128 FIT inputs, batches 1/8/64, and three cyclic model orders. Each formal pass is preceded by one complete-input warmup; each model's first condition use is also recorded. A block therefore records 27 formal, 27 warmup and nine first-use passes. The two blocks are not a six-model fully interleaved or paired-repeat experiment.
 
-The manuscript retains material omissions, meat/fat false positives, and a separate oat replication with lower Dice/slower full-file processing relative to U-Net. This executable package concerns pork; neither oat assets nor unpublished numerical tables are distributed here.
+Copy the example JSON to a working directory, set real paths and SHA256 hashes, and select a block. For block B, replace the checkpoint keys with `B0`, `B1` and `T`. Relative paths resolve against the configuration file's directory. Inspect the schedule before execution:
+
+```sh
+python src/file_timing.py --config /path/to/block_a.json
+python src/file_timing.py --config /path/to/block_a.json --output /path/to/new-timing-a --execute
+python src/file_timing.py --config /path/to/block_b.json --output /path/to/new-timing-b --execute
+```
+
+The measured interval includes NPY reading, FP32 CHW conversion, host-to-device transfer, frozen preprocessing, BF16 prediction, logit-zero masks, CPU return and concatenation. Models are already loaded and files are warm. Acquisition, model loading, mask writes and downstream handling are outside the interval. CUDA-event sums are recorded separately from complete-file wall time. A 128-file total divided by 128 is not a measured single-patch response latency.
+
+The recorded environment was Windows 11, Ryzen 7 9700X, RTX 5070 Ti, Python 3.13.5, NumPy 2.1.3 and PyTorch 2.7.0+cu128, with four intra-op threads, TF32 disabled, cuDNN benchmarking disabled and default legal SDPA policy. Enabled SDPA flags identify policy, not a profiled selected kernel. Environment and input/checkpoint identities are written for each execution; compare these receipts before combining separately run blocks. Other machines or backends may produce different timings.
+
+Outputs include every first-use/warmup/formal pass, three-pass condition medians and ranges, allocator peaks and completion status. The runner stops between conditions after a 600-second budget and retains partial records on failure. The archived manuscript measurements used identical `host`, `file_run` and `measure` operations; this release adds configurable paths, validation and receipts around those operations.
+
+The older `workflow.py time` entry remains a separate original-three-model device/file protocol. Its earlier environment and measurements should not be pooled with the current six-model file-workflow results.
 
 ## Attribution and software licence
 
-See `THIRD_PARTY_NOTICES.md` for source and architectural attribution. Dependencies are installed separately and retain their own licences. The authors have not assigned an additional software reuse licence; copyright is retained. No blanket MIT or Apache licence is implied for study-authored code or source datasets.
+See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for architectural attribution and dependency licences. Study-authored source remains copyright-retained without an additional software reuse licence. Dataset and dependency terms apply separately.
 
-Version **1.0.0** is identified by its Git tag/commit and `CITATION.cff`. No article DOI or scholarly archive DOI is invented. Source-code access and complete experimental reproducibility are separate scopes.
+Use the versioned Git tag and `CITATION.cff` when citing the code. A scholarly archive DOI has not been assigned.
