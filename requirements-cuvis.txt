@@ -1,0 +1,2 @@
+# Native Cuvis SDK must also be installed according to the provider instructions.
+cuvis==3.6.1.0

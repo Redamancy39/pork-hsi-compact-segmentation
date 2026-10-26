@@ -6,7 +6,7 @@ The workflow uses all 184 measured bands. A FIT-derived standardiser and frozen 
 
 ## Installation and lightweight checks
 
-Use Python 3.10 or later with an official platform-appropriate PyTorch 2.7.0 build:
+Use Python 3.11 or later with an official platform-appropriate PyTorch 2.7.0 build:
 
 ```sh
 python -m pip install -r requirements.txt
@@ -15,7 +15,7 @@ python src/workflow.py --help
 python src/file_timing.py --config configs/file_timing.example.json
 ```
 
-The last command prints the timing schedule. Actual processing requires the explicit `--execute` flag and separately supplied inputs. Tests use synthetic CPU data to check labels, metrics, model construction, parameter counts, sampling, file paths and timing schedules; they do not run model forwards. The portable training and timing commands have not been replayed end to end as a release test.
+The last command prints the timing schedule. Actual processing requires the explicit `--execute` flag and separately supplied inputs. Tests use synthetic CPU data to check labels, metrics, model construction, parameter counts, sampling, file paths and timing schedules. Lentil tests also run small synthetic CPU forwards without updating weights. The portable training and timing commands have not been replayed end to end as a release test.
 
 ## Models and entry points
 
@@ -37,7 +37,13 @@ The last command prints the timing schedule. Actual processing requires the expl
 - `src/file_timing.py`: the two-triplet file-to-mask timing protocol corresponding to the manuscript's six-model comparison.
 - `configs/file_timing.example.json`: editable path/hash example, without experiment members or fitted values.
 
-Version 1.1.0 preserves the model, label, training and evaluation implementations from v1.0.0. See [CHANGELOG.md](CHANGELOG.md) for the publication update.
+Version 1.2.0 preserves the pork model, label, training and evaluation implementations from v1.0.0 and the six-model timing from v1.1.0. See [CHANGELOG.md](CHANGELOG.md) for the publication update.
+
+## Lentil replication and saved-logit spatial analysis
+
+Version 1.2.0 adds lentil readback/calibration, FIT-only standardisation/PCA, fixed eight-run training, full-frame window stitching, held-out-date evaluation and saved-count summarisation. See [the lentil reproduction guide](docs/LENTIL_REPRODUCTION.md) and `configs/lentil.example.json`. The default plan command does not read raw containers.
+
+`src/analyse_saved_spatial.py` reproduces patch-local foreground/background transitions and meat/fat interface strata from externally supplied saved class IDs and logits. Configure all four models and four seeds with `configs/spatial_analysis.example.json`, then run `python src/analyse_saved_spatial.py --config /path/to/spatial.json --out /path/to/analysis`. It checks identities and original source counts before writing results and does not load a network.
 
 ## Public data and experiment inputs
 

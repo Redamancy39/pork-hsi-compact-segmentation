@@ -1,0 +1,8 @@
+{
+  "dataset_revision": "ce3a213e96f83b0b2499514c09a661e52332110e",
+  "data_root": "/path/to/pinned-lentil-dataset",
+  "metadata_root": "/path/to/pinned-lentil-dataset",
+  "members_csv": "/path/to/ESM_2/lentil_replication/research_members.csv",
+  "work_root": "/path/to/new-lentil-run",
+  "cuvis_bin": null
+}

@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.0 — 2026-10-26
+
+- Add Cubert lentil calibration, FIT preprocessing, fixed-recipe training, locked-model full-frame evaluation and count summarisation with configurable paths.
+- Add saved-logit spatial analysis and synthetic CPU contract tests.
+- Preserve the existing pork models and six-model timing implementation.
+- Document input assets and validation scope. Experiment results, checkpoint selection and software licence are unchanged.
+
 ## 1.1.0 — 2026-10-24
 
 - Document the six-model timing as two matched-environment three-model execution blocks.

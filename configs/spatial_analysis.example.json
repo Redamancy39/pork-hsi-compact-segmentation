@@ -1,0 +1,137 @@
+{
+  "members": "/path/to/members.csv",
+  "class_ids": "/path/to/original_ids.npy",
+  "expected_source_counts": "/path/to/expanded_comparison_per_source.csv",
+  "manifest_sha256": "REPLACE_WITH_SHA256",
+  "ids_sha256": "REPLACE_WITH_SHA256",
+  "predictions": [
+    {
+      "family": "B0",
+      "seed": 42,
+      "logits": "/path/to/B0_s42.npy",
+      "manifest_sha256": "REPLACE_WITH_SHA256",
+      "logits_sha256": "REPLACE_WITH_SHA256",
+      "checkpoint_sha256": "REPLACE_WITH_SHA256"
+    },
+    {
+      "family": "B0",
+      "seed": 43,
+      "logits": "/path/to/B0_s43.npy",
+      "manifest_sha256": "REPLACE_WITH_SHA256",
+      "logits_sha256": "REPLACE_WITH_SHA256",
+      "checkpoint_sha256": "REPLACE_WITH_SHA256"
+    },
+    {
+      "family": "B0",
+      "seed": 44,
+      "logits": "/path/to/B0_s44.npy",
+      "manifest_sha256": "REPLACE_WITH_SHA256",
+      "logits_sha256": "REPLACE_WITH_SHA256",
+      "checkpoint_sha256": "REPLACE_WITH_SHA256"
+    },
+    {
+      "family": "B0",
+      "seed": 45,
+      "logits": "/path/to/B0_s45.npy",
+      "manifest_sha256": "REPLACE_WITH_SHA256",
+      "logits_sha256": "REPLACE_WITH_SHA256",
+      "checkpoint_sha256": "REPLACE_WITH_SHA256"
+    },
+    {
+      "family": "B1",
+      "seed": 42,
+      "logits": "/path/to/B1_s42.npy",
+      "manifest_sha256": "REPLACE_WITH_SHA256",
+      "logits_sha256": "REPLACE_WITH_SHA256",
+      "checkpoint_sha256": "REPLACE_WITH_SHA256"
+    },
+    {
+      "family": "B1",
+      "seed": 43,
+      "logits": "/path/to/B1_s43.npy",
+      "manifest_sha256": "REPLACE_WITH_SHA256",
+      "logits_sha256": "REPLACE_WITH_SHA256",
+      "checkpoint_sha256": "REPLACE_WITH_SHA256"
+    },
+    {
+      "family": "B1",
+      "seed": 44,
+      "logits": "/path/to/B1_s44.npy",
+      "manifest_sha256": "REPLACE_WITH_SHA256",
+      "logits_sha256": "REPLACE_WITH_SHA256",
+      "checkpoint_sha256": "REPLACE_WITH_SHA256"
+    },
+    {
+      "family": "B1",
+      "seed": 45,
+      "logits": "/path/to/B1_s45.npy",
+      "manifest_sha256": "REPLACE_WITH_SHA256",
+      "logits_sha256": "REPLACE_WITH_SHA256",
+      "checkpoint_sha256": "REPLACE_WITH_SHA256"
+    },
+    {
+      "family": "T",
+      "seed": 42,
+      "logits": "/path/to/T_s42.npy",
+      "manifest_sha256": "REPLACE_WITH_SHA256",
+      "logits_sha256": "REPLACE_WITH_SHA256",
+      "checkpoint_sha256": "REPLACE_WITH_SHA256"
+    },
+    {
+      "family": "T",
+      "seed": 43,
+      "logits": "/path/to/T_s43.npy",
+      "manifest_sha256": "REPLACE_WITH_SHA256",
+      "logits_sha256": "REPLACE_WITH_SHA256",
+      "checkpoint_sha256": "REPLACE_WITH_SHA256"
+    },
+    {
+      "family": "T",
+      "seed": 44,
+      "logits": "/path/to/T_s44.npy",
+      "manifest_sha256": "REPLACE_WITH_SHA256",
+      "logits_sha256": "REPLACE_WITH_SHA256",
+      "checkpoint_sha256": "REPLACE_WITH_SHA256"
+    },
+    {
+      "family": "T",
+      "seed": 45,
+      "logits": "/path/to/T_s45.npy",
+      "manifest_sha256": "REPLACE_WITH_SHA256",
+      "logits_sha256": "REPLACE_WITH_SHA256",
+      "checkpoint_sha256": "REPLACE_WITH_SHA256"
+    },
+    {
+      "family": "B1_ALL_D1",
+      "seed": 42,
+      "logits": "/path/to/B1_ALL_D1_s42.npy",
+      "manifest_sha256": "REPLACE_WITH_SHA256",
+      "logits_sha256": "REPLACE_WITH_SHA256",
+      "checkpoint_sha256": "REPLACE_WITH_SHA256"
+    },
+    {
+      "family": "B1_ALL_D1",
+      "seed": 43,
+      "logits": "/path/to/B1_ALL_D1_s43.npy",
+      "manifest_sha256": "REPLACE_WITH_SHA256",
+      "logits_sha256": "REPLACE_WITH_SHA256",
+      "checkpoint_sha256": "REPLACE_WITH_SHA256"
+    },
+    {
+      "family": "B1_ALL_D1",
+      "seed": 44,
+      "logits": "/path/to/B1_ALL_D1_s44.npy",
+      "manifest_sha256": "REPLACE_WITH_SHA256",
+      "logits_sha256": "REPLACE_WITH_SHA256",
+      "checkpoint_sha256": "REPLACE_WITH_SHA256"
+    },
+    {
+      "family": "B1_ALL_D1",
+      "seed": 45,
+      "logits": "/path/to/B1_ALL_D1_s45.npy",
+      "manifest_sha256": "REPLACE_WITH_SHA256",
+      "logits_sha256": "REPLACE_WITH_SHA256",
+      "checkpoint_sha256": "REPLACE_WITH_SHA256"
+    }
+  ]
+}
